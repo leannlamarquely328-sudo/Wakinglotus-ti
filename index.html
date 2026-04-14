@@ -8,6 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- html2canvas 截图库 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -35,6 +37,17 @@
         @keyframes bgPulse {
             0% { background-color: #0a080c; }
             100% { background-color: #110d14; }
+        }
+
+        /* 粒子画布 */
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
         }
 
         /* 流光线条装饰 */
@@ -126,6 +139,20 @@
             letter-spacing: 1px;
         }
 
+        /* 维度进度标签 */
+        .dim-progress-tag {
+            font-size: 13px;
+            color: #c9a063;
+            background: rgba(30, 20, 25, 0.5);
+            display: inline-block;
+            padding: 4px 16px;
+            border-radius: 30px;
+            margin-bottom: 15px;
+            backdrop-filter: blur(5px);
+            border: 1px solid #7a6248;
+            letter-spacing: 1px;
+        }
+
         /* 姓名输入界面 */
         .name-section {
             text-align: center;
@@ -181,8 +208,14 @@
             transform: scale(1.01);
         }
 
+        /* 题目动画 */
         .question-box {
             margin: 20px 0 28px;
+            animation: slideFadeIn 0.35s cubic-bezier(0.2, 0.9, 0.3, 1);
+        }
+        @keyframes slideFadeIn {
+            0% { opacity: 0; transform: translateY(12px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
 
         .question-text {
@@ -226,9 +259,22 @@
             box-shadow: 0 10px 18px -5px #000000b0;
         }
 
-        /* 结果卡片 */
+        /* 点击高亮反馈 */
+        .option-btn.just-clicked {
+            background: #b2804a !important;
+            border-color: #e2bc8b !important;
+            color: #0f0b0a !important;
+            transform: scale(0.98);
+        }
+
+        /* 结果卡片入场动画 */
         .result-card {
             text-align: center;
+            animation: resultReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes resultReveal {
+            0% { opacity: 0; transform: scale(0.92) translateY(20px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
         }
 
         .result-badge {
@@ -460,9 +506,30 @@
             max-width: 380px;
             margin: 0 auto;
         }
+
+        /* 摇晃彩蛋提示 */
+        .shake-toast {
+            position: fixed;
+            bottom: 100px; left: 20px; right: 20px;
+            background: #b2804aee;
+            backdrop-filter: blur(15px);
+            border-radius: 60px;
+            padding: 16px 24px;
+            z-index: 1001;
+            text-align: center;
+            color: #0f0b0a;
+            font-weight: 600;
+            box-shadow: 0 10px 30px black;
+            max-width: 380px;
+            margin: 0 auto;
+            border: 1px solid #e2bc8b;
+        }
     </style>
 </head>
 <body>
+    <!-- 粒子背景画布 -->
+    <canvas id="particleCanvas"></canvas>
+
 <div class="app">
     <div class="card" id="mainCard">
         <!-- 姓名输入区（初始显示） -->
@@ -501,10 +568,64 @@
 
 <!-- 彩蛋提示 (toast) -->
 <div id="easterToast" class="easter-egg-toast hidden">🎁 醒莲请你一份小食！凭此页面向调酒师领取</div>
+<!-- 摇晃彩蛋提示 -->
+<div id="shakeToast" class="shake-toast hidden"></div>
 
 <script>
     (function(){
         "use strict";
+
+        // ---------- 粒子背景 ----------
+        (function(){
+            const canvas = document.getElementById('particleCanvas');
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let particles = [];
+            const PARTICLE_COUNT = 45;
+            
+            function resize() {
+                width = window.innerWidth;
+                height = window.innerHeight;
+                canvas.width = width;
+                canvas.height = height;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+            
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * height;
+                    this.size = Math.random() * 2.5 + 1;
+                    this.speedX = (Math.random() - 0.5) * 0.2;
+                    this.speedY = (Math.random() - 0.5) * 0.1;
+                    this.opacity = Math.random() * 0.3 + 0.1;
+                }
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    if (this.x < 0) this.x = width;
+                    if (this.x > width) this.x = 0;
+                    if (this.y < 0) this.y = height;
+                    if (this.y > height) this.y = 0;
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(210, 170, 120, ${this.opacity})`;
+                    ctx.fill();
+                }
+            }
+            
+            for (let i=0; i<PARTICLE_COUNT; i++) particles.push(new Particle());
+            
+            function animateParticles() {
+                ctx.clearRect(0, 0, width, height);
+                particles.forEach(p => { p.update(); p.draw(); });
+                requestAnimationFrame(animateParticles);
+            }
+            animateParticles();
+        })();
 
         // ---------- 酒水库 (16款) ----------
         const WINE_DATA = {
@@ -526,7 +647,7 @@
             'CHIS': { wine: '蝴蝶效应', persona: '时间的旅人', desc: '你相信每一个微小的选择都会改变人生的轨迹。所以你喝得很慢，想得很深。这一杯蝴蝶效应，草本、香料、木质调层层递进，就像你走过的路，每一步都算数。你是今晚吧台上最不动声色，也最富深情的过客。' }
         };
 
-        // 题目 (10道)
+        // 题目 (10道) —— 增加了维度统计用
         const QUESTIONS = [
             { text: '周五晚上，你的精神状态是？', dimension: 'energy', options: [
                 { text: '一周没见活人了，今晚必须大聊特聊，把嗓子聊哑那种', value: 'W' },
@@ -590,6 +711,14 @@
             ]}
         ];
 
+        // 维度配置
+        const DIM_CONFIG = {
+            energy: { name: '🔥 饮酒能量', icon: 'fa-fire', left: 'W·热闹共饮', right: 'C·安静独酌', total: 3 },
+            taste:   { name: '🍯 口味倾向', icon: 'fa-wine-glass', left: 'S·偏爱甜柔', right: 'H·偏好干烈', total: 3 },
+            reaction:{ name: '🎭 微醺反应', icon: 'fa-masks-theater', left: 'E·越喝越外放', right: 'I·越喝越内收', total: 2 },
+            pace:    { name: '⏳ 饮酒节奏', icon: 'fa-hourglass-half', left: 'F·入口爽快', right: 'S·细品慢抿', total: 2 }
+        };
+
         // DOM 元素
         const nameEntryArea = document.getElementById('nameEntryArea');
         const quizArea = document.getElementById('quizArea');
@@ -602,6 +731,7 @@
         const mainTitle = document.getElementById('mainTitle');
         const quizTitle = document.getElementById('quizTitle');
         const easterToast = document.getElementById('easterToast');
+        const shakeToast = document.getElementById('shakeToast');
 
         // 状态
         let currentIndex = 0;
@@ -609,6 +739,54 @@
         let scores = { W:0, C:0, S:0, H:0, E:0, I:0, F:0, S_pace:0 };
         let userName = '';
         let titleClickCount = 0;
+
+        // 摇晃彩蛋相关
+        let shakeCount = 0;
+        let lastShake = 0;
+        const SHAKE_THRESHOLD = 18;
+        let shakeEnabled = false;
+        let shakeGiftUsed = parseInt(localStorage.getItem('shakeGiftUsed')||'0');
+
+        // 请求陀螺仪权限 (iOS)
+        function requestMotionPermission() {
+            if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+                DeviceMotionEvent.requestPermission().then(permissionState => {
+                    if (permissionState === 'granted') {
+                        enableShakeDetection();
+                    }
+                }).catch(console.error);
+            } else {
+                // 非iOS直接启用
+                enableShakeDetection();
+            }
+        }
+        function enableShakeDetection() {
+            shakeEnabled = true;
+            window.addEventListener('devicemotion', handleShake);
+        }
+        function handleShake(e) {
+            if (!shakeEnabled) return;
+            const acc = e.accelerationIncludingGravity;
+            if (!acc) return;
+            const magnitude = Math.sqrt(acc.x*acc.x + acc.y*acc.y + acc.z*acc.z);
+            const now = Date.now();
+            if (magnitude > SHAKE_THRESHOLD && now - lastShake > 300) {
+                lastShake = now;
+                shakeCount++;
+                if (shakeCount >= 5) {
+                    if (shakeGiftUsed < 10) {
+                        shakeGiftUsed++;
+                        localStorage.setItem('shakeGiftUsed', shakeGiftUsed);
+                        shakeToast.textContent = `🍸 摇出隐藏福利！凭此页到吧台领特调一杯！(剩余${10-shakeGiftUsed}次)`;
+                    } else {
+                        shakeToast.textContent = '今天的摇晃福利已领完，明天再来吧～';
+                    }
+                    shakeToast.classList.remove('hidden');
+                    setTimeout(() => shakeToast.classList.add('hidden'), 4000);
+                    shakeCount = 0;
+                }
+            }
+        }
 
         // 彩蛋：点击标题5次 (两个标题都监听)
         function setupEasterEgg() {
@@ -631,12 +809,27 @@
             userName = name || '酒友';
             nameEntryArea.classList.add('hidden');
             quizArea.classList.remove('hidden');
+            // 请求陀螺仪权限（用户交互触发）
+            requestMotionPermission();
             renderQuestion(0);
         });
 
+        // 获取当前维度进度文本
+        function getDimProgressText(index) {
+            const currentDim = QUESTIONS[index].dimension;
+            const dimTotal = DIM_CONFIG[currentDim].total;
+            // 计算已答当前维度的题目数 (包括当前这一题)
+            let count = 0;
+            for (let i = 0; i <= index; i++) {
+                if (QUESTIONS[i].dimension === currentDim) count++;
+            }
+            return `${DIM_CONFIG[currentDim].name} · ${count}/${dimTotal}`;
+        }
+
         function renderQuestion(index) {
             const q = QUESTIONS[index];
-            let html = `<div class="question-text">${q.text}</div><div class="options">`;
+            const dimProgressHtml = `<div class="dim-progress-tag">${getDimProgressText(index)}</div>`;
+            let html = dimProgressHtml + `<div class="question-text">${q.text}</div><div class="options">`;
             q.options.forEach((opt) => {
                 html += `<div class="option-btn" data-value="${opt.value}">${opt.text}</div>`;
             });
@@ -645,6 +838,9 @@
 
             document.querySelectorAll('.option-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
+                    // 点击高亮反馈
+                    btn.classList.add('just-clicked');
+                    setTimeout(() => btn.classList.remove('just-clicked'), 150);
                     handleAnswer(btn.dataset.value);
                 });
             });
@@ -696,25 +892,26 @@
             quizArea.classList.add('hidden');
             resultArea.classList.remove('hidden');
 
+            // 使用Font Awesome图标
             const scoresHtml = `
                 <div class="scores-panel">
                     <div class="score-item">
-                        <div class="score-header"><span>🔥 饮酒能量</span><span>${scores.W} : ${scores.C}</span></div>
+                        <div class="score-header"><span><i class="fas fa-fire"></i> 饮酒能量</span><span>${scores.W} : ${scores.C}</span></div>
                         <div class="score-bar-bg"><div class="score-bar-fill" style="width:${pctW}%;"></div></div>
                         <div class="dim-label"><span>W·热闹共饮</span><span>C·安静独酌</span></div>
                     </div>
                     <div class="score-item">
-                        <div class="score-header"><span>🍯 口味倾向</span><span>${scores.S} : ${scores.H}</span></div>
+                        <div class="score-header"><span><i class="fas fa-wine-glass-alt"></i> 口味倾向</span><span>${scores.S} : ${scores.H}</span></div>
                         <div class="score-bar-bg"><div class="score-bar-fill" style="width:${pctS}%;"></div></div>
                         <div class="dim-label"><span>S·偏爱甜柔</span><span>H·偏好干烈</span></div>
                     </div>
                     <div class="score-item">
-                        <div class="score-header"><span>🎭 微醺反应</span><span>${scores.E} : ${scores.I}</span></div>
+                        <div class="score-header"><span><i class="fas fa-masks-theater"></i> 微醺反应</span><span>${scores.E} : ${scores.I}</span></div>
                         <div class="score-bar-bg"><div class="score-bar-fill" style="width:${pctE}%;"></div></div>
                         <div class="dim-label"><span>E·越喝越外放</span><span>I·越喝越内收</span></div>
                     </div>
                     <div class="score-item">
-                        <div class="score-header"><span>⏳ 饮酒节奏</span><span>${scores.F} : ${scores.S_pace}</span></div>
+                        <div class="score-header"><span><i class="fas fa-hourglass-half"></i> 饮酒节奏</span><span>${scores.F} : ${scores.S_pace}</span></div>
                         <div class="score-bar-bg"><div class="score-bar-fill" style="width:${pctF}%;"></div></div>
                         <div class="dim-label"><span>F·入口爽快</span><span>S·细品慢抿</span></div>
                     </div>
@@ -732,7 +929,7 @@
                     ${scoresHtml}
                     <div class="btn-group">
                         <div class="btn" id="restartBtn">再测一次</div>
-                        <div class="btn btn-primary" id="shareBtn">📸 生成海报</div>
+                        <div class="btn btn-primary" id="shareBtn"><i class="fas fa-camera"></i> 生成海报</div>
                     </div>
                 </div>
             `;
@@ -777,7 +974,11 @@
             resultArea.classList.add('hidden');
             titleClickCount = 0;
             easterToast.classList.add('hidden');
+            shakeCount = 0;
+            // 移除监听重新绑定？不用，保持监听即可
         }
+
+        // 初始化渲染 (不执行，等待开始)
     })();
 </script>
 </body>
