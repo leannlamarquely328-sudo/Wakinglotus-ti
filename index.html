@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>醒莲TI · 杯中人格图鉴</title>
+    <!-- 优雅字体 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- html2canvas 截图库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -12,32 +18,52 @@
         }
 
         body {
-            background: #0b0a0c;
-            background-image: radial-gradient(circle at 20% 30%, #1f1a24 0%, #040304 100%);
+            background: #0a080c;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(40, 28, 40, 0.9) 0%, #040304 100%),
+                repeating-linear-gradient(45deg, rgba(210, 160, 100, 0.02) 0px, rgba(210, 160, 100, 0.02) 3px, transparent 3px, transparent 8px);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            font-family: 'Inter', sans-serif;
             padding: 16px;
-            color: #e8e3d9;
+            color: #f0e7de;
+            position: relative;
+            animation: bgPulse 12s infinite alternate;
+        }
+        @keyframes bgPulse {
+            0% { background-color: #0a080c; }
+            100% { background-color: #110d14; }
+        }
+
+        /* 流光线条装饰 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 3px;
+            background: linear-gradient(90deg, transparent, #d4a373, #e8c09a, #d4a373, transparent);
+            opacity: 0.4;
+            z-index: 10;
         }
 
         .app {
             width: 100%;
             max-width: 420px;
             margin: 0 auto;
+            position: relative;
+            z-index: 5;
         }
 
         .card {
-            background: rgba(18, 15, 20, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(210, 170, 120, 0.2);
-            border-radius: 36px;
+            background: rgba(15, 12, 18, 0.65);
+            backdrop-filter: blur(30px) saturate(180%);
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            border: 1px solid rgba(220, 180, 130, 0.2);
+            border-radius: 44px;
             padding: 28px 22px;
-            box-shadow: 0 25px 40px -10px rgba(0,0,0,0.7), 0 0 0 1px rgba(190, 140, 80, 0.1) inset;
-            transition: all 0.2s ease;
+            box-shadow: 0 35px 60px -10px rgba(0,0,0,0.8), 0 0 0 1px rgba(200, 150, 90, 0.15) inset, 0 0 30px rgba(200, 140, 70, 0.1);
+            transition: transform 0.3s ease;
         }
 
         .header {
@@ -46,51 +72,113 @@
         }
 
         .header h1 {
-            font-size: 30px;
-            font-weight: 600;
-            letter-spacing: 2px;
-            background: linear-gradient(135deg, #f3e7d9 0%, #c9aa7b 80%);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 40px;
+            font-weight: 700;
+            letter-spacing: 6px;
+            background: linear-gradient(135deg, #f8ede0 0%, #d6b58e 70%);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
             margin-bottom: 6px;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            text-shadow: 0 4px 15px rgba(0,0,0,0.6);
+            cursor: default;
+            user-select: none;
+            filter: drop-shadow(0 0 6px #c9a063);
         }
 
         .subhead {
             font-size: 13px;
-            opacity: 0.7;
-            letter-spacing: 3px;
+            opacity: 0.75;
+            letter-spacing: 5px;
             text-transform: uppercase;
-            color: #b9a58e;
+            color: #cbb59b;
+            font-weight: 300;
         }
 
         .progress-wrap {
-            margin: 16px 0 10px;
+            margin: 20px 0 10px;
         }
 
         .progress-bar {
-            height: 3px;
-            background: #2a232e;
+            height: 4px;
+            background: rgba(40, 30, 35, 0.7);
             border-radius: 10px;
             overflow: hidden;
+            box-shadow: inset 0 1px 4px #00000055;
         }
 
         .progress-fill {
             height: 100%;
             width: 10%;
-            background: linear-gradient(90deg, #b98f6e, #e2b58b);
+            background: linear-gradient(90deg, #d4a373, #f2d1a8);
             border-radius: 10px;
-            transition: width 0.3s ease;
-            box-shadow: 0 0 8px #c89a6a;
+            transition: width 0.4s cubic-bezier(0.2, 0.9, 0.4, 1);
+            box-shadow: 0 0 15px #e2b58b;
         }
 
         .q-counter {
             text-align: right;
-            font-size: 13px;
+            font-size: 12px;
             margin-top: 6px;
-            color: #a48d78;
+            color: #b8a088;
             font-weight: 400;
+            letter-spacing: 1px;
+        }
+
+        /* 姓名输入界面 */
+        .name-section {
+            text-align: center;
+            padding: 20px 0 10px;
+        }
+        .name-label {
+            font-size: 22px;
+            margin-bottom: 24px;
+            color: #ecdcc9;
+            font-weight: 400;
+            text-shadow: 0 2px 5px black;
+        }
+        .name-input {
+            width: 100%;
+            padding: 18px 22px;
+            background: rgba(20, 16, 24, 0.7);
+            border: 1.5px solid #7a6248;
+            border-radius: 60px;
+            font-size: 18px;
+            color: #f0e0ce;
+            outline: none;
+            backdrop-filter: blur(5px);
+            transition: border 0.2s;
+            text-align: center;
+            font-family: 'Inter', sans-serif;
+        }
+        .name-input:focus {
+            border-color: #d4a373;
+            box-shadow: 0 0 15px #c9a06355;
+        }
+        .name-input::placeholder {
+            color: #8a7a6a;
+            font-size: 16px;
+        }
+        .start-btn {
+            margin-top: 28px;
+            width: 100%;
+            background: #b2804a;
+            border: none;
+            border-radius: 60px;
+            padding: 18px;
+            font-size: 20px;
+            font-weight: 600;
+            color: #0f0b0a;
+            box-shadow: 0 10px 20px -5px #00000080;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 2px;
+            border: 1px solid #e2bc8b;
+        }
+        .start-btn:hover {
+            background: #c99b64;
+            transform: scale(1.01);
         }
 
         .question-box {
@@ -98,12 +186,12 @@
         }
 
         .question-text {
-            font-size: 22px;
+            font-size: 23px;
             font-weight: 500;
             line-height: 1.4;
             margin-bottom: 28px;
-            color: #f0e6da;
-            text-shadow: 0 1px 3px black;
+            color: #f5e9dd;
+            text-shadow: 0 2px 6px black;
         }
 
         .options {
@@ -113,113 +201,182 @@
         }
 
         .option-btn {
-            background: rgba(30, 24, 32, 0.7);
-            border: 1px solid #3e3140;
+            background: rgba(25, 20, 28, 0.65);
+            border: 1.5px solid #544150;
             border-radius: 60px;
             padding: 16px 20px;
-            font-size: 16px;
-            color: #dfd1c0;
+            font-size: 15px;
+            color: #e2d2c0;
             text-align: left;
-            backdrop-filter: blur(4px);
-            transition: all 0.2s;
+            backdrop-filter: blur(8px);
+            transition: all 0.25s ease;
             cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            box-shadow: 0 5px 12px rgba(0,0,0,0.3);
             font-weight: 400;
-            letter-spacing: 0.3px;
             line-height: 1.4;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .option-btn:hover {
-            background: #382e3a;
-            border-color: #b58b64;
-            color: #f2e0cc;
+            background: #453544;
+            border-color: #c9a063;
+            color: #fff0e0;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 18px -5px #000000b0;
         }
 
+        /* 结果卡片 */
         .result-card {
             text-align: center;
         }
 
         .result-badge {
             display: inline-block;
-            background: #1e1820;
-            padding: 6px 18px;
+            background: #1f1720cc;
+            backdrop-filter: blur(5px);
+            padding: 8px 24px;
             border-radius: 40px;
-            font-size: 15px;
-            letter-spacing: 3px;
-            border: 1px solid #7a6248;
-            color: #d4b28c;
-            margin-bottom: 16px;
+            font-size: 14px;
+            letter-spacing: 4px;
+            border: 1px solid #9b8266;
+            color: #e1c7ac;
+            margin-bottom: 20px;
+        }
+
+        .greeting {
+            font-size: 18px;
+            color: #d4bb9f;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+        .greeting span {
+            font-weight: 600;
+            color: #f0d5b7;
+            border-bottom: 1px dashed #b58b64;
+            padding-bottom: 2px;
         }
 
         .wine-name {
-            font-size: 40px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 48px;
             font-weight: 700;
             line-height: 1.1;
-            margin-bottom: 8px;
-            background: linear-gradient(to right, #f5e6d3, #d6b080);
+            margin: 8px 0;
+            background: linear-gradient(to right, #f5e6d3, #e0be98);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            text-shadow: 0 0 10px rgba(210, 150, 80, 0.3);
+            text-shadow: 0 0 25px #c89a6a80;
         }
 
         .persona-title {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 400;
-            margin-bottom: 24px;
-            color: #bc9f82;
-            border-bottom: 1px dashed #5f4c3a;
+            margin-bottom: 20px;
+            color: #c6a883;
+            border-bottom: 1px dashed #7a6248;
             padding-bottom: 16px;
         }
 
         .desc-text {
             text-align: left;
-            background: #110e12;
+            background: rgba(17, 14, 18, 0.5);
+            backdrop-filter: blur(5px);
             padding: 20px 18px;
             border-radius: 24px;
             margin: 20px 0;
-            border-left: 4px solid #b2804a;
-            font-size: 16px;
-            line-height: 1.6;
-            color: #dacbbc;
+            border-left: 5px solid #c9a063;
+            font-size: 15px;
+            line-height: 1.65;
+            color: #dfcfbe;
+        }
+
+        /* 维度得分 */
+        .scores-panel {
+            margin: 20px 0;
+            padding: 18px 14px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 24px;
+            border: 1px solid #4f3e33;
+        }
+
+        .score-item {
+            margin-bottom: 16px;
+        }
+
+        .score-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #cbb29a;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .score-bar-bg {
+            height: 6px;
+            background: #2a1f26;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px black;
+        }
+
+        .score-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #c1945e, #ebc89c);
+            border-radius: 10px;
+            box-shadow: 0 0 10px #d4a373;
+            transition: width 0.6s ease;
+        }
+
+        .dim-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #9b8670;
+            margin-top: 4px;
         }
 
         .btn-group {
             display: flex;
             gap: 12px;
-            margin-top: 18px;
+            margin-top: 24px;
         }
 
         .btn {
             background: transparent;
-            border: 1.5px solid #7a6248;
-            color: #e5cfb5;
-            padding: 14px 20px;
+            border: 1.8px solid #8f7358;
+            color: #eddccb;
+            padding: 14px 18px;
             border-radius: 60px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 500;
             flex: 1;
             cursor: pointer;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(8px);
             transition: 0.2s;
             text-align: center;
+            letter-spacing: 0.5px;
         }
 
         .btn-primary {
             background: #b2804a;
-            border-color: #dbb07c;
-            color: #0f0b0a;
+            border-color: #e2bc8b;
+            color: #0a0605;
             font-weight: 600;
-            box-shadow: 0 8px 14px -6px #221a12;
+            box-shadow: 0 8px 18px -6px #1f140e;
         }
 
         .btn-primary:hover {
-            background: #c99b64;
+            background: #cf9f67;
+            transform: scale(1.02);
         }
 
         .btn:hover {
             background: #2f2430;
-            border-color: #b59068;
+            border-color: #c9a063;
         }
 
         .hidden {
@@ -227,41 +384,104 @@
         }
 
         .footer-note {
-            margin-top: 20px;
+            margin-top: 22px;
             font-size: 12px;
-            opacity: 0.5;
+            opacity: 0.45;
             text-align: center;
-            color: #aa9b8a;
+            color: #bfaa98;
+            letter-spacing: 2px;
         }
 
         .fade-in {
-            animation: fade 0.4s ease;
+            animation: fade 0.5s ease;
         }
         @keyframes fade {
-            0% { opacity: 0.3; transform: translateY(5px); }
+            0% { opacity: 0; transform: translateY(8px); }
             100% { opacity: 1; transform: translateY(0); }
         }
 
         .letter-code {
             font-family: monospace;
-            font-size: 18px;
-            background: #231d24;
+            font-size: 20px;
+            background: #1e1620cc;
             display: inline-block;
-            padding: 4px 12px;
-            border-radius: 30px;
-            margin-bottom: 8px;
-            letter-spacing: 6px;
-            border: 1px solid #695438;
+            padding: 5px 20px;
+            border-radius: 40px;
+            margin-bottom: 12px;
+            letter-spacing: 8px;
+            border: 1px solid #a58462;
+            backdrop-filter: blur(5px);
+        }
+
+        /* 截图预览浮层 */
+        .screenshot-preview {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            padding: 16px;
+        }
+        .screenshot-preview img {
+            max-width: 100%;
+            max-height: 90%;
+            border-radius: 36px;
+            border: 2px solid #c9a063;
+            box-shadow: 0 0 40px #000000cc;
+        }
+        .close-preview {
+            position: absolute;
+            top: 20px; right: 30px;
+            color: #fff;
+            font-size: 44px;
+            cursor: pointer;
+            opacity: 0.8;
+            z-index: 1000;
+        }
+
+        /* 彩蛋弹窗 */
+        .easter-egg-toast {
+            position: fixed;
+            bottom: 30px; left: 20px; right: 20px;
+            background: #1e1620f0;
+            backdrop-filter: blur(20px);
+            border: 1px solid #d4b28c;
+            border-radius: 60px;
+            padding: 18px 24px;
+            z-index: 1000;
+            text-align: center;
+            color: #f2ddcb;
+            font-size: 18px;
+            font-weight: 500;
+            box-shadow: 0 10px 30px black;
+            transition: all 0.4s;
+            max-width: 380px;
+            margin: 0 auto;
         }
     </style>
 </head>
 <body>
 <div class="app">
     <div class="card" id="mainCard">
-        <!-- 测试区 -->
-        <div id="quizArea">
+        <!-- 姓名输入区（初始显示） -->
+        <div id="nameEntryArea">
             <div class="header">
-                <h1>醒莲TI</h1>
+                <h1 id="mainTitle">醒莲TI</h1>
+                <div class="subhead">杯中人格图鉴</div>
+            </div>
+            <div class="name-section">
+                <div class="name-label">留下你的名字，<br>开启微醺人格测试</div>
+                <input type="text" id="userNameInput" class="name-input" placeholder="例如：阿莲" maxlength="12" autocomplete="off">
+                <button class="start-btn" id="startQuizBtn">开始品鉴</button>
+            </div>
+        </div>
+
+        <!-- 测试区（初始隐藏） -->
+        <div id="quizArea" class="hidden">
+            <div class="header">
+                <h1 id="quizTitle">醒莲TI</h1>
                 <div class="subhead">杯中人格图鉴</div>
                 <div class="progress-wrap">
                     <div class="progress-bar">
@@ -270,17 +490,18 @@
                     <div class="q-counter" id="qCounter">1 / 10</div>
                 </div>
             </div>
-            <div id="questionContainer" class="question-box">
-                <!-- 动态渲染 -->
-            </div>
+            <div id="questionContainer" class="question-box"></div>
         </div>
-        <!-- 结果区 -->
-        <div id="resultArea" class="result-card hidden">
-            <!-- 动态渲染 -->
-        </div>
+
+        <!-- 结果区（初始隐藏） -->
+        <div id="resultArea" class="result-card hidden"></div>
     </div>
     <div class="footer-note">醒莲 · 你的杯中人格</div>
 </div>
+
+<!-- 彩蛋提示 (toast) -->
+<div id="easterToast" class="easter-egg-toast hidden">🎁 醒莲请你一份小食！凭此页面向调酒师领取</div>
+
 <script>
     (function(){
         "use strict";
@@ -305,124 +526,113 @@
             'CHIS': { wine: '蝴蝶效应', persona: '时间的旅人', desc: '你相信每一个微小的选择都会改变人生的轨迹。所以你喝得很慢，想得很深。这一杯蝴蝶效应，草本、香料、木质调层层递进，就像你走过的路，每一步都算数。你是今晚吧台上最不动声色，也最富深情的过客。' }
         };
 
-        // ---------- 10道抓马题目 ----------
+        // 题目 (10道)
         const QUESTIONS = [
-            // 能量维度 1-3
-            {
-                text: '周五晚上，你的精神状态是？',
-                dimension: 'energy',
-                options: [
-                    { text: '一周没见活人了，今晚必须大聊特聊，把嗓子聊哑那种', value: 'W' },
-                    { text: '哪里有音乐哪里就有我，本人就是氛围组的编外成员', value: 'W' },
-                    { text: '社交电池只剩8%，只够和调酒师进行眼神交流', value: 'C' },
-                    { text: '带了本书来喝酒，虽然一页也不会翻，但姿态要有', value: 'C' }
-                ]
-            },
-            {
-                text: '醒莲今晚的背景音乐，你希望是？',
-                dimension: 'energy',
-                options: [
-                    { text: '耳膜马杀鸡级别的City Pop，整个人都想扭成波浪线', value: 'W' },
-                    { text: '能跟着嚎两嗓子的摇滚，副歌部分必须甩头', value: 'W' },
-                    { text: '低沉的电子，适合一个人演内心独角戏', value: 'C' },
-                    { text: '慵懒到像在哄你睡觉的爵士，最好歌词都听不清', value: 'C' }
-                ]
-            },
-            {
-                text: '隔壁桌的陌生人看起来像你互联网上的精神家人，你会？',
-                dimension: 'energy',
-                options: [
-                    { text: '直接举杯：“姐妹/兄弟，你们点的啥？我也要！”', value: 'W' },
-                    { text: '先眼神拉丝三次，然后找准时机加入他们的话题', value: 'W' },
-                    { text: '内心弹幕疯狂滚动，但表面稳如老狗，继续品自己的酒', value: 'C' },
-                    { text: '默默戴上降噪耳机，今夜的人类观察样本+1', value: 'C' }
-                ]
-            },
-            // 口味维度 4-6
-            {
-                text: '第一口酒入口，你希望你的味蕾接收到什么信号？',
-                dimension: 'taste',
-                options: [
-                    { text: '这是酒吗？这是成年版QQ糖化的果汁吧！好喝到跺脚', value: 'S' },
-                    { text: '像被云朵亲了一口，甜甜奶奶，喝完想撒娇', value: 'S' },
-                    { text: '嗯，有劲，像被生活给了一拳但这次是我自愿的', value: 'H' },
-                    { text: '苦得高级，酸得清醒，喝完觉得自己是文艺片主角', value: 'H' }
-                ]
-            },
-            {
-                text: '只能选一款下酒小食，你的DNA选择了？',
-                dimension: 'taste',
-                options: [
-                    { text: '甜品！微醺配蛋糕，中年危机往后稍一稍', value: 'S' },
-                    { text: '水果！骗自己这顿酒喝得很健康', value: 'S' },
-                    { text: '火腿芝士拼盘，一些维持体面的蛋白质信仰', value: 'H' },
-                    { text: '黑巧或橄榄，主打一个“这苦我吃得下”', value: 'H' }
-                ]
-            },
-            {
-                text: '朋友递来一杯你没喝过的酒，你尝完内心OS是？',
-                dimension: 'taste',
-                options: [
-                    { text: '好顺！警告自己这不是果汁，但手已经停不下来了', value: 'S' },
-                    { text: '好温柔，像在被窝里喝了一口春天', value: 'S' },
-                    { text: '好烈，感觉自己现在能徒手写三千字小作文', value: 'H' },
-                    { text: '好复杂，感觉调酒师在里面藏了一部电影', value: 'H' }
-                ]
-            },
-            // 微醺反应 7-8
-            {
-                text: '三杯下肚，刚好到达“世界好美好”的状态，你会？',
-                dimension: 'reaction',
-                options: [
-                    { text: '和隔壁桌从星座聊到原生家庭，差点当场结拜', value: 'E' },
-                    { text: '背景音乐就是我的演唱会，我就是醒莲王菲/陈奕迅', value: 'E' },
-                    { text: '开启省电模式，瘫在沙发上眼神放空，觉得此刻即是永恒', value: 'I' },
-                    { text: '大脑开始放映人生走马灯，思考宇宙和今晚谁送我回家', value: 'I' }
-                ]
-            },
-            {
-                text: '调酒师突然送你一杯隐藏酒单，你的第一反应是？',
-                dimension: 'reaction',
-                options: [
-                    { text: '受宠若惊！立刻大声感谢并当场表演一口闷', value: 'E' },
-                    { text: '手机先喝，朋友圈文案已经在脑子里自动生成了', value: 'E' },
-                    { text: '表面淡定点头，内心已经放起了烟花', value: 'I' },
-                    { text: '暗中观察这杯酒的色泽和香气，试图破解配方', value: 'I' }
-                ]
-            },
-            // 饮酒节奏 9-10
-            {
-                text: '酒还剩最后一口，你和它的告别仪式是？',
-                dimension: 'pace',
-                options: [
-                    { text: '话说到兴头上，随手拿起一仰脖，豪迈得像古代侠客', value: 'F' },
-                    { text: '快速拍照修图发圈，然后三口干掉，奔赴下一个战场', value: 'F' },
-                    { text: '小口抿，感受冰化了之后味道的层次变化，像在做实验', value: 'P_S' },
-                    { text: '舍不得喝完，总觉得喝完这口童话就结束了', value: 'P_S' }
-                ]
-            },
-            {
-                text: '朋友说“这杯巨好喝你尝尝”，你的行动是？',
-                dimension: 'pace',
-                options: [
-                    { text: '直接拿过来吨一大口，好喝就大声夸，不好喝就做鬼脸', value: 'F' },
-                    { text: '喝一大口立刻开启点评模式，专业词汇疯狂输出', value: 'F' },
-                    { text: '用吸管蘸一丢丢，先让舌尖开个会', value: 'P_S' },
-                    { text: '先闻一分钟，再抿一小口，闭眼品味，朋友以为你睡着了', value: 'P_S' }
-                ]
-            }
+            { text: '周五晚上，你的精神状态是？', dimension: 'energy', options: [
+                { text: '一周没见活人了，今晚必须大聊特聊，把嗓子聊哑那种', value: 'W' },
+                { text: '哪里有音乐哪里就有我，本人就是氛围组的编外成员', value: 'W' },
+                { text: '社交电池只剩8%，只够和调酒师进行眼神交流', value: 'C' },
+                { text: '带了本书来喝酒，虽然一页也不会翻，但姿态要有', value: 'C' }
+            ]},
+            { text: '醒莲今晚的背景音乐，你希望是？', dimension: 'energy', options: [
+                { text: '耳膜马杀鸡级别的City Pop，整个人都想扭成波浪线', value: 'W' },
+                { text: '能跟着嚎两嗓子的摇滚，副歌部分必须甩头', value: 'W' },
+                { text: '低沉的电子，适合一个人演内心独角戏', value: 'C' },
+                { text: '慵懒到像在哄你睡觉的爵士，最好歌词都听不清', value: 'C' }
+            ]},
+            { text: '隔壁桌的陌生人看起来像你互联网上的精神家人，你会？', dimension: 'energy', options: [
+                { text: '直接举杯：“姐妹/兄弟，你们点的啥？我也要！”', value: 'W' },
+                { text: '先眼神拉丝三次，然后找准时机加入他们的话题', value: 'W' },
+                { text: '内心弹幕疯狂滚动，但表面稳如老狗，继续品自己的酒', value: 'C' },
+                { text: '默默戴上降噪耳机，今夜的人类观察样本+1', value: 'C' }
+            ]},
+            { text: '第一口酒入口，你希望你的味蕾接收到什么信号？', dimension: 'taste', options: [
+                { text: '这是酒吗？这是成年版QQ糖化的果汁吧！好喝到跺脚', value: 'S' },
+                { text: '像被云朵亲了一口，甜甜奶奶，喝完想撒娇', value: 'S' },
+                { text: '嗯，有劲，像被生活给了一拳但这次是我自愿的', value: 'H' },
+                { text: '苦得高级，酸得清醒，喝完觉得自己是文艺片主角', value: 'H' }
+            ]},
+            { text: '只能选一款下酒小食，你的DNA选择了？', dimension: 'taste', options: [
+                { text: '甜品！微醺配蛋糕，中年危机往后稍一稍', value: 'S' },
+                { text: '水果！骗自己这顿酒喝得很健康', value: 'S' },
+                { text: '火腿芝士拼盘，一些维持体面的蛋白质信仰', value: 'H' },
+                { text: '黑巧或橄榄，主打一个“这苦我吃得下”', value: 'H' }
+            ]},
+            { text: '朋友递来一杯你没喝过的酒，你尝完内心OS是？', dimension: 'taste', options: [
+                { text: '好顺！警告自己这不是果汁，但手已经停不下来了', value: 'S' },
+                { text: '好温柔，像在被窝里喝了一口春天', value: 'S' },
+                { text: '好烈，感觉自己现在能徒手写三千字小作文', value: 'H' },
+                { text: '好复杂，感觉调酒师在里面藏了一部电影', value: 'H' }
+            ]},
+            { text: '三杯下肚，刚好到达“世界好美好”的状态，你会？', dimension: 'reaction', options: [
+                { text: '和隔壁桌从星座聊到原生家庭，差点当场结拜', value: 'E' },
+                { text: '背景音乐就是我的演唱会，我就是醒莲王菲/陈奕迅', value: 'E' },
+                { text: '开启省电模式，瘫在沙发上眼神放空，觉得此刻即是永恒', value: 'I' },
+                { text: '大脑开始放映人生走马灯，思考宇宙和今晚谁送我回家', value: 'I' }
+            ]},
+            { text: '调酒师突然送你一杯隐藏酒单，你的第一反应是？', dimension: 'reaction', options: [
+                { text: '受宠若惊！立刻大声感谢并当场表演一口闷', value: 'E' },
+                { text: '手机先喝，朋友圈文案已经在脑子里自动生成了', value: 'E' },
+                { text: '表面淡定点头，内心已经放起了烟花', value: 'I' },
+                { text: '暗中观察这杯酒的色泽和香气，试图破解配方', value: 'I' }
+            ]},
+            { text: '酒还剩最后一口，你和它的告别仪式是？', dimension: 'pace', options: [
+                { text: '话说到兴头上，随手拿起一仰脖，豪迈得像古代侠客', value: 'F' },
+                { text: '快速拍照修图发圈，然后三口干掉，奔赴下一个战场', value: 'F' },
+                { text: '小口抿，感受冰化了之后味道的层次变化，像在做实验', value: 'P_S' },
+                { text: '舍不得喝完，总觉得喝完这口童话就结束了', value: 'P_S' }
+            ]},
+            { text: '朋友说“这杯巨好喝你尝尝”，你的行动是？', dimension: 'pace', options: [
+                { text: '直接拿过来吨一大口，好喝就大声夸，不好喝就做鬼脸', value: 'F' },
+                { text: '喝一大口立刻开启点评模式，专业词汇疯狂输出', value: 'F' },
+                { text: '用吸管蘸一丢丢，先让舌尖开个会', value: 'P_S' },
+                { text: '先闻一分钟，再抿一小口，闭眼品味，朋友以为你睡着了', value: 'P_S' }
+            ]}
         ];
 
-        // 状态
-        let currentIndex = 0;
-        const totalQ = QUESTIONS.length;
-        let scores = { W:0, C:0, S:0, H:0, E:0, I:0, F:0, S_pace:0 };
-
+        // DOM 元素
+        const nameEntryArea = document.getElementById('nameEntryArea');
         const quizArea = document.getElementById('quizArea');
         const resultArea = document.getElementById('resultArea');
         const questionContainer = document.getElementById('questionContainer');
         const progressFill = document.getElementById('progressFill');
         const qCounter = document.getElementById('qCounter');
+        const userNameInput = document.getElementById('userNameInput');
+        const startBtn = document.getElementById('startQuizBtn');
+        const mainTitle = document.getElementById('mainTitle');
+        const quizTitle = document.getElementById('quizTitle');
+        const easterToast = document.getElementById('easterToast');
+
+        // 状态
+        let currentIndex = 0;
+        const totalQ = QUESTIONS.length;
+        let scores = { W:0, C:0, S:0, H:0, E:0, I:0, F:0, S_pace:0 };
+        let userName = '';
+        let titleClickCount = 0;
+
+        // 彩蛋：点击标题5次 (两个标题都监听)
+        function setupEasterEgg() {
+            [mainTitle, quizTitle].forEach(t => {
+                if(t) t.addEventListener('click', () => {
+                    titleClickCount++;
+                    if (titleClickCount >= 5) {
+                        easterToast.classList.remove('hidden');
+                        titleClickCount = 0;
+                        setTimeout(() => easterToast.classList.add('hidden'), 4000);
+                    }
+                });
+            });
+        }
+        setupEasterEgg();
+
+        // 开始测试
+        startBtn.addEventListener('click', () => {
+            const name = userNameInput.value.trim();
+            userName = name || '酒友';
+            nameEntryArea.classList.add('hidden');
+            quizArea.classList.remove('hidden');
+            renderQuestion(0);
+        });
 
         function renderQuestion(index) {
             const q = QUESTIONS[index];
@@ -439,8 +649,7 @@
                 });
             });
 
-            const progress = ((index + 1) / totalQ) * 100;
-            progressFill.style.width = progress + '%';
+            progressFill.style.width = ((index + 1) / totalQ * 100) + '%';
             qCounter.textContent = `${index+1} / ${totalQ}`;
         }
 
@@ -473,51 +682,102 @@
         function showResult() {
             const typeCode = computeType();
             const wine = WINE_DATA[typeCode];
-            if (!wine) {
-                alert('数据错误，请重试');
-                resetQuiz();
-                return;
-            }
+            if (!wine) { alert('数据错误'); resetAll(); return; }
+
+            const totalEnergy = scores.W + scores.C;
+            const totalTaste = scores.S + scores.H;
+            const totalReaction = scores.E + scores.I;
+            const totalPace = scores.F + scores.S_pace;
+            const pctW = totalEnergy ? (scores.W / totalEnergy * 100) : 50;
+            const pctS = totalTaste ? (scores.S / totalTaste * 100) : 50;
+            const pctE = totalReaction ? (scores.E / totalReaction * 100) : 50;
+            const pctF = totalPace ? (scores.F / totalPace * 100) : 50;
 
             quizArea.classList.add('hidden');
             resultArea.classList.remove('hidden');
 
+            const scoresHtml = `
+                <div class="scores-panel">
+                    <div class="score-item">
+                        <div class="score-header"><span>🔥 饮酒能量</span><span>${scores.W} : ${scores.C}</span></div>
+                        <div class="score-bar-bg"><div class="score-bar-fill" style="width:${pctW}%;"></div></div>
+                        <div class="dim-label"><span>W·热闹共饮</span><span>C·安静独酌</span></div>
+                    </div>
+                    <div class="score-item">
+                        <div class="score-header"><span>🍯 口味倾向</span><span>${scores.S} : ${scores.H}</span></div>
+                        <div class="score-bar-bg"><div class="score-bar-fill" style="width:${pctS}%;"></div></div>
+                        <div class="dim-label"><span>S·偏爱甜柔</span><span>H·偏好干烈</span></div>
+                    </div>
+                    <div class="score-item">
+                        <div class="score-header"><span>🎭 微醺反应</span><span>${scores.E} : ${scores.I}</span></div>
+                        <div class="score-bar-bg"><div class="score-bar-fill" style="width:${pctE}%;"></div></div>
+                        <div class="dim-label"><span>E·越喝越外放</span><span>I·越喝越内收</span></div>
+                    </div>
+                    <div class="score-item">
+                        <div class="score-header"><span>⏳ 饮酒节奏</span><span>${scores.F} : ${scores.S_pace}</span></div>
+                        <div class="score-bar-bg"><div class="score-bar-fill" style="width:${pctF}%;"></div></div>
+                        <div class="dim-label"><span>F·入口爽快</span><span>S·细品慢抿</span></div>
+                    </div>
+                </div>
+            `;
+
             const html = `
-                <div class="fade-in">
+                <div class="fade-in" id="resultContent">
                     <div class="result-badge">YOUR DRINK</div>
+                    <div class="greeting">亲爱的 <span>${userName}</span></div>
                     <div class="letter-code">${typeCode}</div>
                     <div class="wine-name">${wine.wine}</div>
                     <div class="persona-title">${wine.persona}</div>
                     <div class="desc-text">${wine.desc}</div>
+                    ${scoresHtml}
                     <div class="btn-group">
                         <div class="btn" id="restartBtn">再测一次</div>
-                        <div class="btn btn-primary" id="shareMock">分享结果</div>
+                        <div class="btn btn-primary" id="shareBtn">📸 生成海报</div>
                     </div>
                 </div>
             `;
             resultArea.innerHTML = html;
 
-            document.getElementById('restartBtn').addEventListener('click', resetQuiz);
-            document.getElementById('shareMock').addEventListener('click', () => {
-                alert('长按屏幕即可保存或分享你的杯中人格 ✨\n—— 醒莲TI');
+            document.getElementById('restartBtn').addEventListener('click', resetAll);
+            document.getElementById('shareBtn').addEventListener('click', captureScreenshot);
+        }
+
+        function captureScreenshot() {
+            const element = document.getElementById('resultContent');
+            const btnGroup = element.querySelector('.btn-group');
+            if(btnGroup) btnGroup.style.display = 'none';
+            
+            html2canvas(element, {
+                scale: 2.2,
+                backgroundColor: '#0b0a0c',
+                allowTaint: false,
+                useCORS: true,
+                logging: false
+            }).then(canvas => {
+                if(btnGroup) btnGroup.style.display = 'flex';
+                const preview = document.createElement('div');
+                preview.className = 'screenshot-preview';
+                preview.innerHTML = `<span class="close-preview">&times;</span><img src="${canvas.toDataURL('image/png')}" />`;
+                document.body.appendChild(preview);
+                preview.querySelector('.close-preview').addEventListener('click', () => preview.remove());
+                alert('长按图片即可保存到相册');
+            }).catch(err => {
+                if(btnGroup) btnGroup.style.display = 'flex';
+                alert('截图生成失败，可手动截图');
             });
         }
 
-        function resetQuiz() {
+        function resetAll() {
             currentIndex = 0;
             scores = { W:0, C:0, S:0, H:0, E:0, I:0, F:0, S_pace:0 };
-            quizArea.classList.remove('hidden');
+            userName = '';
+            userNameInput.value = '';
+            nameEntryArea.classList.remove('hidden');
+            quizArea.classList.add('hidden');
             resultArea.classList.add('hidden');
-            renderQuestion(0);
+            titleClickCount = 0;
+            easterToast.classList.add('hidden');
         }
-
-        renderQuestion(0);
-
-        document.querySelector('.header h1').addEventListener('dblclick', function(){
-            if(confirm('重新开始测试？')) {
-                resetQuiz();
-            }
-        });
     })();
 </script>
 </body>
