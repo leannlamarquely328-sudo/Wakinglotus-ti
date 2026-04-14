@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>醒莲TI · 杯中人格图鉴</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0b0a0c;
+            background-image: radial-gradient(circle at 20% 30%, #1f1a24 0%, #040304 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            padding: 16px;
+            color: #e8e3d9;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 420px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: rgba(18, 15, 20, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(210, 170, 120, 0.2);
+            border-radius: 36px;
+            padding: 28px 22px;
+            box-shadow: 0 25px 40px -10px rgba(0,0,0,0.7), 0 0 0 1px rgba(190, 140, 80, 0.1) inset;
+            transition: all 0.2s ease;
+        }
+
+        .header {
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 30px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #f3e7d9 0%, #c9aa7b 80%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 6px;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .subhead {
+            font-size: 13px;
+            opacity: 0.7;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #b9a58e;
+        }
+
+        .progress-wrap {
+            margin: 16px 0 10px;
+        }
+
+        .progress-bar {
+            height: 3px;
+            background: #2a232e;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 10%;
+            background: linear-gradient(90deg, #b98f6e, #e2b58b);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 8px #c89a6a;
+        }
+
+        .q-counter {
+            text-align: right;
+            font-size: 13px;
+            margin-top: 6px;
+            color: #a48d78;
+            font-weight: 400;
+        }
+
+        .question-box {
+            margin: 20px 0 28px;
+        }
+
+        .question-text {
+            font-size: 22px;
+            font-weight: 500;
+            line-height: 1.4;
+            margin-bottom: 28px;
+            color: #f0e6da;
+            text-shadow: 0 1px 3px black;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: rgba(30, 24, 32, 0.7);
+            border: 1px solid #3e3140;
+            border-radius: 60px;
+            padding: 16px 20px;
+            font-size: 16px;
+            color: #dfd1c0;
+            text-align: left;
+            backdrop-filter: blur(4px);
+            transition: all 0.2s;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            font-weight: 400;
+            letter-spacing: 0.3px;
+            line-height: 1.4;
+        }
+
+        .option-btn:hover {
+            background: #382e3a;
+            border-color: #b58b64;
+            color: #f2e0cc;
+        }
+
+        .result-card {
+            text-align: center;
+        }
+
+        .result-badge {
+            display: inline-block;
+            background: #1e1820;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 15px;
+            letter-spacing: 3px;
+            border: 1px solid #7a6248;
+            color: #d4b28c;
+            margin-bottom: 16px;
+        }
+
+        .wine-name {
+            font-size: 40px;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 8px;
+            background: linear-gradient(to right, #f5e6d3, #d6b080);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(210, 150, 80, 0.3);
+        }
+
+        .persona-title {
+            font-size: 20px;
+            font-weight: 400;
+            margin-bottom: 24px;
+            color: #bc9f82;
+            border-bottom: 1px dashed #5f4c3a;
+            padding-bottom: 16px;
+        }
+
+        .desc-text {
+            text-align: left;
+            background: #110e12;
+            padding: 20px 18px;
+            border-radius: 24px;
+            margin: 20px 0;
+            border-left: 4px solid #b2804a;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #dacbbc;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .btn {
+            background: transparent;
+            border: 1.5px solid #7a6248;
+            color: #e5cfb5;
+            padding: 14px 20px;
+            border-radius: 60px;
+            font-size: 16px;
+            font-weight: 500;
+            flex: 1;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            transition: 0.2s;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: #b2804a;
+            border-color: #dbb07c;
+            color: #0f0b0a;
+            font-weight: 600;
+            box-shadow: 0 8px 14px -6px #221a12;
+        }
+
+        .btn-primary:hover {
+            background: #c99b64;
+        }
+
+        .btn:hover {
+            background: #2f2430;
+            border-color: #b59068;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .footer-note {
+            margin-top: 20px;
+            font-size: 12px;
+            opacity: 0.5;
+            text-align: center;
+            color: #aa9b8a;
+        }
+
+        .fade-in {
+            animation: fade 0.4s ease;
+        }
+        @keyframes fade {
+            0% { opacity: 0.3; transform: translateY(5px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .letter-code {
+            font-family: monospace;
+            font-size: 18px;
+            background: #231d24;
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 30px;
+            margin-bottom: 8px;
+            letter-spacing: 6px;
+            border: 1px solid #695438;
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <div class="card" id="mainCard">
+        <!-- 测试区 -->
+        <div id="quizArea">
+            <div class="header">
+                <h1>醒莲TI</h1>
+                <div class="subhead">杯中人格图鉴</div>
+                <div class="progress-wrap">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 10%;"></div>
+                    </div>
+                    <div class="q-counter" id="qCounter">1 / 10</div>
+                </div>
+            </div>
+            <div id="questionContainer" class="question-box">
+                <!-- 动态渲染 -->
+            </div>
+        </div>
+        <!-- 结果区 -->
+        <div id="resultArea" class="result-card hidden">
+            <!-- 动态渲染 -->
+        </div>
+    </div>
+    <div class="footer-note">醒莲 · 你的杯中人格</div>
+</div>
+<script>
+    (function(){
+        "use strict";
+
+        // ---------- 酒水库 (16款) ----------
+        const WINE_DATA = {
+            'WSEF': { wine: '醒莲的嗨爆', persona: '人间烟火气', desc: '你是局里当之无愧的气氛组长。只要你在，冷场是不存在的。你喜欢热烈、直接、有气泡感的一切，就像周五晚上的第一口嗨棒。你不爱纠结，觉得开心就该喊出来，酒就该大口喝。' },
+            'WSES': { wine: '花与爱丽丝', persona: '温柔避风港', desc: '你像岩井俊二镜头下的少女，柔软、细腻、带着毛茸茸的善意。你喝酒不赶时间，喜欢捧着杯子慢慢聊，聊花火、聊芭蕾、聊那些说不清道不明的心事。你是朋友们最想倾诉的对象。' },
+            'WSIF': { wine: '茶里茶气', persona: '甜心隐藏款', desc: '你长了一张“我很好说话”的脸，笑起来人畜无害。但实际上你心里比谁都清楚，该装傻时装傻，该出手时出手。像一杯茶里茶气，闻着是清纯的茉莉花香，咽下去才知道底下藏着四十度的伏特加。' },
+            'WSIS': { wine: '八重樱', persona: '静谧花园', desc: '你喜欢热闹，但更喜欢在热闹里找一个安静的角落。像开在庭院深处的八重樱，层层叠叠的花瓣里藏着自己的小宇宙。你喝得很慢，笑得很浅，但内心丰盛得如同整个春天。' },
+            'WHEF': { wine: '黑兰州', persona: '江湖儿女', desc: '你天生属于夜晚的长风。不扭捏，不做作，有酒就干，有故事就讲。你喜欢直接而强烈的味道，正如你喜欢坦荡而热烈的人生。在醒莲，你是那支在黑夜里被点燃的黑兰州，烟雾缭绕间，自有你的侠骨柔情。' },
+            'WHES': { wine: '街角的吉他男', persona: '老灵魂乐手', desc: '你身上有一种怀旧的气息，像傍晚坐在街角弹吉他的男人。你话不多，但开口就是故事；你喝酒不快，但每一口都在品味。你喜欢经典的东西，比如一首老歌、一杯Old Fashioned、一段值得等待的关系。' },
+            'WHIF': { wine: '阿司匹林', persona: '孤胆英雄', desc: '你是那种喝完这杯就要去拯救世界的人。你习惯把情绪调成静音，把疲惫压进杯底。你不需要安慰，只需要一杯烈酒和片刻的安宁。阿司匹林不是治病的药，是你与这世界短暂和解的方式。' },
+            'WHIS': { wine: '嗜血鲨鱼', persona: '沉默的幸存者', desc: '你看起来冷静、克制、甚至有些疏离。但只有靠近你的人才知道，你内心住着一头嗜血鲨鱼。你喝得很慢，眼神很稳，像在深海里巡航，不鸣则已，一旦出击，便是雷霆万钧。' },
+            'CSEF': { wine: '荒野玫瑰', persona: '午夜飞行家', desc: '你一个人来醒莲，却能认识一桌人。你像沙漠里长出的一朵玫瑰，带刺，但足够明艳。你喝甜酒，但性格绝不甜腻；你喜欢社交，但从不依附。喝完这杯，你可能就要飞往下一个时区。' },
+            'CSES': { wine: '关于莉莉周的一切', persona: '孤独鉴赏家', desc: '你身上有一种透明的少年感，像站在麦田里听Lily Chou-Chou的少年。你享受独处的音浪，喜欢在昏暗的灯光下看冰块融化。你的甜不是直给的，带着一点青春的残酷和诗意。' },
+            'CSIF': { wine: '二环的本命年', persona: '清醒梦境', desc: '你手腕上系着红绳，心里装着清醒。你看着窗外二环的车流，独自举杯。这杯酒不烈，刚好让你保持体面；这杯酒不甜，刚好让你记住今晚。你在自己的本命年里，学会了与自己干杯。' },
+            'CSIS': { wine: '亚洲搅拌', persona: '自我放逐者', desc: '你不爱跟风，有自己的节奏。就像调酒师慢慢搅拌一杯亚洲风味的Old Fashioned，冰一点点融化，风味层层打开。你不需要全世界理解你，你只在自己的时区里微醺。' },
+            'CHEF': { wine: '醒莲的金汤力', persona: '硬核浪漫', desc: '你喜欢极简主义。Gin & Tonic，不需要花哨的装饰，好酒好冰好汤力水足矣。你也是这样的人：直接、坦诚、不玩虚的。你的浪漫是杜松子的香气，凛冽而持久。' },
+            'CHES': { wine: '糖蒜酸', persona: '午夜哲学家', desc: '你是一个复杂的人，就像这杯糖蒜酸。爱的人爱死，恨的人逃跑。酸得极致，带着一丝诡异的蒜香，但细细品味，竟然是回甘的。你在深夜里思考的那些问题，就像这杯酒，没有标准答案，只有个人偏好。' },
+            'CHIF': { wine: '小满贯', persona: '微笑的刺客', desc: '你看着云淡风轻，话不多，举杯干脆。不了解你的人觉得你是个随和的路人甲，只有交过手才知道，你是深藏不露的大魔王。就像小满贯，喝起来顺口，站起来腿软。' },
+            'CHIS': { wine: '蝴蝶效应', persona: '时间的旅人', desc: '你相信每一个微小的选择都会改变人生的轨迹。所以你喝得很慢，想得很深。这一杯蝴蝶效应，草本、香料、木质调层层递进，就像你走过的路，每一步都算数。你是今晚吧台上最不动声色，也最富深情的过客。' }
+        };
+
+        // ---------- 10道抓马题目 ----------
+        const QUESTIONS = [
+            // 能量维度 1-3
+            {
+                text: '周五晚上，你的精神状态是？',
+                dimension: 'energy',
+                options: [
+                    { text: '一周没见活人了，今晚必须大聊特聊，把嗓子聊哑那种', value: 'W' },
+                    { text: '哪里有音乐哪里就有我，本人就是氛围组的编外成员', value: 'W' },
+                    { text: '社交电池只剩8%，只够和调酒师进行眼神交流', value: 'C' },
+                    { text: '带了本书来喝酒，虽然一页也不会翻，但姿态要有', value: 'C' }
+                ]
+            },
+            {
+                text: '醒莲今晚的背景音乐，你希望是？',
+                dimension: 'energy',
+                options: [
+                    { text: '耳膜马杀鸡级别的City Pop，整个人都想扭成波浪线', value: 'W' },
+                    { text: '能跟着嚎两嗓子的摇滚，副歌部分必须甩头', value: 'W' },
+                    { text: '低沉的电子，适合一个人演内心独角戏', value: 'C' },
+                    { text: '慵懒到像在哄你睡觉的爵士，最好歌词都听不清', value: 'C' }
+                ]
+            },
+            {
+                text: '隔壁桌的陌生人看起来像你互联网上的精神家人，你会？',
+                dimension: 'energy',
+                options: [
+                    { text: '直接举杯：“姐妹/兄弟，你们点的啥？我也要！”', value: 'W' },
+                    { text: '先眼神拉丝三次，然后找准时机加入他们的话题', value: 'W' },
+                    { text: '内心弹幕疯狂滚动，但表面稳如老狗，继续品自己的酒', value: 'C' },
+                    { text: '默默戴上降噪耳机，今夜的人类观察样本+1', value: 'C' }
+                ]
+            },
+            // 口味维度 4-6
+            {
+                text: '第一口酒入口，你希望你的味蕾接收到什么信号？',
+                dimension: 'taste',
+                options: [
+                    { text: '这是酒吗？这是成年版QQ糖化的果汁吧！好喝到跺脚', value: 'S' },
+                    { text: '像被云朵亲了一口，甜甜奶奶，喝完想撒娇', value: 'S' },
+                    { text: '嗯，有劲，像被生活给了一拳但这次是我自愿的', value: 'H' },
+                    { text: '苦得高级，酸得清醒，喝完觉得自己是文艺片主角', value: 'H' }
+                ]
+            },
+            {
+                text: '只能选一款下酒小食，你的DNA选择了？',
+                dimension: 'taste',
+                options: [
+                    { text: '甜品！微醺配蛋糕，中年危机往后稍一稍', value: 'S' },
+                    { text: '水果！骗自己这顿酒喝得很健康', value: 'S' },
+                    { text: '火腿芝士拼盘，一些维持体面的蛋白质信仰', value: 'H' },
+                    { text: '黑巧或橄榄，主打一个“这苦我吃得下”', value: 'H' }
+                ]
+            },
+            {
+                text: '朋友递来一杯你没喝过的酒，你尝完内心OS是？',
+                dimension: 'taste',
+                options: [
+                    { text: '好顺！警告自己这不是果汁，但手已经停不下来了', value: 'S' },
+                    { text: '好温柔，像在被窝里喝了一口春天', value: 'S' },
+                    { text: '好烈，感觉自己现在能徒手写三千字小作文', value: 'H' },
+                    { text: '好复杂，感觉调酒师在里面藏了一部电影', value: 'H' }
+                ]
+            },
+            // 微醺反应 7-8
+            {
+                text: '三杯下肚，刚好到达“世界好美好”的状态，你会？',
+                dimension: 'reaction',
+                options: [
+                    { text: '和隔壁桌从星座聊到原生家庭，差点当场结拜', value: 'E' },
+                    { text: '背景音乐就是我的演唱会，我就是醒莲王菲/陈奕迅', value: 'E' },
+                    { text: '开启省电模式，瘫在沙发上眼神放空，觉得此刻即是永恒', value: 'I' },
+                    { text: '大脑开始放映人生走马灯，思考宇宙和今晚谁送我回家', value: 'I' }
+                ]
+            },
+            {
+                text: '调酒师突然送你一杯隐藏酒单，你的第一反应是？',
+                dimension: 'reaction',
+                options: [
+                    { text: '受宠若惊！立刻大声感谢并当场表演一口闷', value: 'E' },
+                    { text: '手机先喝，朋友圈文案已经在脑子里自动生成了', value: 'E' },
+                    { text: '表面淡定点头，内心已经放起了烟花', value: 'I' },
+                    { text: '暗中观察这杯酒的色泽和香气，试图破解配方', value: 'I' }
+                ]
+            },
+            // 饮酒节奏 9-10
+            {
+                text: '酒还剩最后一口，你和它的告别仪式是？',
+                dimension: 'pace',
+                options: [
+                    { text: '话说到兴头上，随手拿起一仰脖，豪迈得像古代侠客', value: 'F' },
+                    { text: '快速拍照修图发圈，然后三口干掉，奔赴下一个战场', value: 'F' },
+                    { text: '小口抿，感受冰化了之后味道的层次变化，像在做实验', value: 'P_S' },
+                    { text: '舍不得喝完，总觉得喝完这口童话就结束了', value: 'P_S' }
+                ]
+            },
+            {
+                text: '朋友说“这杯巨好喝你尝尝”，你的行动是？',
+                dimension: 'pace',
+                options: [
+                    { text: '直接拿过来吨一大口，好喝就大声夸，不好喝就做鬼脸', value: 'F' },
+                    { text: '喝一大口立刻开启点评模式，专业词汇疯狂输出', value: 'F' },
+                    { text: '用吸管蘸一丢丢，先让舌尖开个会', value: 'P_S' },
+                    { text: '先闻一分钟，再抿一小口，闭眼品味，朋友以为你睡着了', value: 'P_S' }
+                ]
+            }
+        ];
+
+        // 状态
+        let currentIndex = 0;
+        const totalQ = QUESTIONS.length;
+        let scores = { W:0, C:0, S:0, H:0, E:0, I:0, F:0, S_pace:0 };
+
+        const quizArea = document.getElementById('quizArea');
+        const resultArea = document.getElementById('resultArea');
+        const questionContainer = document.getElementById('questionContainer');
+        const progressFill = document.getElementById('progressFill');
+        const qCounter = document.getElementById('qCounter');
+
+        function renderQuestion(index) {
+            const q = QUESTIONS[index];
+            let html = `<div class="question-text">${q.text}</div><div class="options">`;
+            q.options.forEach((opt) => {
+                html += `<div class="option-btn" data-value="${opt.value}">${opt.text}</div>`;
+            });
+            html += '</div>';
+            questionContainer.innerHTML = html;
+
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    handleAnswer(btn.dataset.value);
+                });
+            });
+
+            const progress = ((index + 1) / totalQ) * 100;
+            progressFill.style.width = progress + '%';
+            qCounter.textContent = `${index+1} / ${totalQ}`;
+        }
+
+        function handleAnswer(value) {
+            if (value === 'W') scores.W++;
+            else if (value === 'C') scores.C++;
+            else if (value === 'S') scores.S++;
+            else if (value === 'H') scores.H++;
+            else if (value === 'E') scores.E++;
+            else if (value === 'I') scores.I++;
+            else if (value === 'F') scores.F++;
+            else if (value === 'P_S') scores.S_pace++;
+            
+            if (currentIndex < totalQ - 1) {
+                currentIndex++;
+                renderQuestion(currentIndex);
+            } else {
+                showResult();
+            }
+        }
+
+        function computeType() {
+            const energy = scores.W >= scores.C ? 'W' : 'C';
+            const taste = scores.S >= scores.H ? 'S' : 'H';
+            const reaction = scores.E >= scores.I ? 'E' : 'I';
+            const pace = scores.F >= scores.S_pace ? 'F' : 'S';
+            return energy + taste + reaction + pace;
+        }
+
+        function showResult() {
+            const typeCode = computeType();
+            const wine = WINE_DATA[typeCode];
+            if (!wine) {
+                alert('数据错误，请重试');
+                resetQuiz();
+                return;
+            }
+
+            quizArea.classList.add('hidden');
+            resultArea.classList.remove('hidden');
+
+            const html = `
+                <div class="fade-in">
+                    <div class="result-badge">YOUR DRINK</div>
+                    <div class="letter-code">${typeCode}</div>
+                    <div class="wine-name">${wine.wine}</div>
+                    <div class="persona-title">${wine.persona}</div>
+                    <div class="desc-text">${wine.desc}</div>
+                    <div class="btn-group">
+                        <div class="btn" id="restartBtn">再测一次</div>
+                        <div class="btn btn-primary" id="shareMock">分享结果</div>
+                    </div>
+                </div>
+            `;
+            resultArea.innerHTML = html;
+
+            document.getElementById('restartBtn').addEventListener('click', resetQuiz);
+            document.getElementById('shareMock').addEventListener('click', () => {
+                alert('长按屏幕即可保存或分享你的杯中人格 ✨\n—— 醒莲TI');
+            });
+        }
+
+        function resetQuiz() {
+            currentIndex = 0;
+            scores = { W:0, C:0, S:0, H:0, E:0, I:0, F:0, S_pace:0 };
+            quizArea.classList.remove('hidden');
+            resultArea.classList.add('hidden');
+            renderQuestion(0);
+        }
+
+        renderQuestion(0);
+
+        document.querySelector('.header h1').addEventListener('dblclick', function(){
+            if(confirm('重新开始测试？')) {
+                resetQuiz();
+            }
+        });
+    })();
+</script>
+</body>
+</html>
